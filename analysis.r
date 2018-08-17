@@ -114,22 +114,46 @@ paired_mat =
   subset(mat, num_correct_answers == 1 & question_type == 3)
 # Matching questions with 1 correct answer and exactly 2 matches
 # FIXME figure out how to handle matches with more than 2 matches
-tmp = subset(
-  aggregate(q1id ~ match_cluster),
-    data = subset(mat, num_correct_answers == 1)
 
-
-# OK, now finally figure out some things
+# The aggregate() function calls puts rows with the same match_cluster together
+# the FUN = length part is an aggregation function which in this case counts
+# the number of rows for each match_cluster.
+# The setorder() function call then sorts by the count that was computed by
+# the aggregate call. The reason we are doing setorder() with q1id is that
+# we can aggregate basically any field over match_cluster, since we aren't
+# doing anything with the field; we are just counting the number of rows.
+# Finally, we subset where q1id (which is actually the count for the aggregate)
+# is 2.
 tmp = subset(
-  # get the questions with exactly 2 matches
   setorder(
-    aggregate(q1id ~ match_cluster, data = subset(qs, match_cluster != -1), FUN = length),
-  q1id),
+    aggregate(q1id ~ match_cluster, data = mat, FUN = length),
+    q1id),
 q1id == 2)
-# now get the full data for things with only 2 matches
-subset(mat, match_cluster %in% tmp$match_cluster)
-# OK, now compare the 1st and 2nd questions for all of the pairs of questions
-tmp3 = tmp2[order(tmp2$match_cluster, tmp2$class_code),]
-for (i in 1:(nrow(tmp3)/2)) {
 
+# Now get the full data for things with only 2 matches.
+# This gets all of the rows of matches, but only where the match_cluster
+# is in the tmp we just produced. So we recover all of the original data in mat,
+# but for a subset of rows.
+tmp2 = subset(mat, match_cluster %in% tmp$match_cluster)
+# This sorts by match_cluster, then by class_code, which means it
+# puts the pairs of questions in chronological order.
+twomat = tmp2[order(tmp2$match_cluster, tmp2$class_code),]
+
+#
+# How many times do we see the 2nd use of a question get better?
+#
+count = 0
+for (i in 1:(nrow(tmp)/2)) {
+  if (twomat[i*2,]$pct1st_correct < twomat[i*2+1,]$pct1st_correct){
+    count = count + 1
+  }
 }
+print(paste('There are ',count,' out of ', nrow(twomat)/2,' row pairs where pct1st_correct goes up',sep=''))
+
+count = 0
+for (i in 1:(nrow(tmp)/2)) {
+  if (twomat[i*2,]$pct1st_correct < twomat[i*2+1,]$pct1st_correct){
+    count = count + 1
+  }
+}
+print(paste('There are ',count,' out of ', nrow(twomat)/2,' row pairs where pct1st_correct goes up',sep=''))
