@@ -143,6 +143,11 @@ twomat = tmp2[order(tmp2$match_cluster, tmp2$class_code),]
 # How many times do we see the 2nd use of a question get better?
 #
 count = 0
+i = 1
+while (i <= nrow(twomat)-1) {
+  if ()
+}
+count = 0
 for (i in 1:(nrow(tmp)/2)) {
   if (twomat[i*2,]$pct1st_correct < twomat[i*2+1,]$pct1st_correct){
     count = count + 1
@@ -157,3 +162,8 @@ for (i in 1:(nrow(tmp)/2)) {
   }
 }
 print(paste('There are ',count,' out of ', nrow(twomat)/2,' row pairs where pct1st_correct goes up',sep=''))
+
+"
+OK, if I could magically produce diffs, what would it look like?
+
+"
