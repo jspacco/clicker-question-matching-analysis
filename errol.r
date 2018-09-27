@@ -23,3 +23,7 @@ ag2 = aggregate(ngdiff ~ match_cluster, data = mat, FUN = length)
 # merging
 # also can rename columns when doing the merge
 m1 = merge(ag1, ag2, by = "match_cluster")
+
+# size of different match clusters
+# using match_type because we aren't really applying the aggregate function to match_type
+aggregate(match_type ~ match_cluster, data = mat, FUN = length)
